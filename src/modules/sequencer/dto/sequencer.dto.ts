@@ -3,10 +3,10 @@ import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { FACTORIAL_SEQ, FIBONACCI_SEQ, RANGE_SEQ, PRIME_SEQ, PARTIAL_SUM_SEQ } from '../sequencer.constants';
 
 export class RunSequencerDto {
-  @ApiModelProperty({ description: 'uniq value for every client' })
+  @ApiModelProperty()
   @IsNotEmpty()
-  @IsString()
-  client: string;
+  @IsNumber()
+  step: number;
 
   @ApiModelProperty()
   @IsNotEmpty()

@@ -16,15 +16,3 @@ export interface IIterator {
 export interface IRegistry {
   [key: string]: IIterator;
 }
-
-export interface IClient {
-  iterator: IIterator;
-  sequencer: string;
-  isEven: boolean;
-  accumulator: boolean;
-  sequencerParams: number[];
-}
-
-export interface IClients {
-  [key: string]: IClient;
-}

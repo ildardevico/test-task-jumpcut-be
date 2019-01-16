@@ -1,15 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { END_ERROR, FACTORIAL_SEQ, FIBONACCI_SEQ, RANGE_SEQ, PRIME_SEQ, PARTIAL_SUM_SEQ } from './sequencer.constants';
-import { SequencerType, PipedSequencerType, IIterator, IPipedSequencerResult, IIsEven, IClients, IClient } from './sequencer.types';
+import { SequencerType, PipedSequencerType, IIterator, IPipedSequencerResult, IIsEven } from './sequencer.types';
 import { RunSequencerDto } from './dto/sequencer.dto';
 
 @Injectable()
 export class SequencerService {
   private step: number;
-  private iterator: IIterator;
-  private runningSequencer: string;
-  private clients: IClients = {};
-
   private readonly sequencerStrategy = {
     [FACTORIAL_SEQ]: this.factorialSeq,
     [FIBONACCI_SEQ]: this.fibonacciSeq,
@@ -120,44 +116,26 @@ export class SequencerService {
   }
 
   public getNextSequencerValue(dto: RunSequencerDto): number | IIsEven {
-    const client = this.clients[dto.client];
-    if (!this.sequencerExist(dto, client)) {
-      let iterator: IIterator = null;
-      const { accumulator, isEven, sequencerParams = [], sequencer } = dto;
-      if (accumulator || isEven) {
-        let pipedSeq = this.pipeSeq(this.sequencerStrategy[sequencer], ...sequencerParams);
-        if (accumulator) {
-          pipedSeq = pipedSeq.pipeline(this.accumulator);
-        }
-        if (isEven) {
-          pipedSeq = pipedSeq.pipeline(this.isEven);
-        }
-        iterator = this.generator(pipedSeq.invoke());
-      } else {
-        iterator = this.generator(this.sequencerStrategy[sequencer], ...sequencerParams);
+    let iterator: IIterator = null;
+    const { accumulator, isEven, sequencerParams = [], sequencer } = dto;
+    if (accumulator || isEven) {
+      let pipedSeq = this.pipeSeq(this.sequencerStrategy[sequencer], ...sequencerParams);
+      if (accumulator) {
+        pipedSeq = pipedSeq.pipeline(this.accumulator);
       }
-      this.clients[dto.client] = {
-        iterator,
-        ...dto,
-      };
+      if (isEven) {
+        pipedSeq = pipedSeq.pipeline(this.isEven);
+      }
+      iterator = this.generator(pipedSeq.invoke());
+    } else {
+      iterator = this.generator(this.sequencerStrategy[sequencer], ...sequencerParams);
     }
-    return this.clients[dto.client].iterator.next();
-  }
-
-  public sequencerExist(dto: RunSequencerDto, client: IClient | undefined): boolean {
-    if (
-      client &&
-      dto.sequencer === client.sequencer &&
-      dto.sequencerParams.toString() === client.sequencerParams.toString() &&
-      dto.accumulator === client.accumulator &&
-      dto.isEven === client.isEven
-    ) {
-      return true;
+    let i = 0;
+    let result = null;
+    while (i <= dto.step) {
+      result = iterator.next();
+      i++;
     }
-    return false;
-  }
-
-  public clearClients() {
-    this.clients = {};
+    return result;
   }
 }

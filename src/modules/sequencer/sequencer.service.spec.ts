@@ -1,5 +1,6 @@
 import { SequencerService } from './sequencer.service';
 import { IPipedSequencerResult } from './sequencer.types';
+import { RANGE_SEQ } from './sequencer.constants';
 
 describe('SequencerService', () => {
   const sequencerService = new SequencerService();
@@ -161,46 +162,29 @@ describe('SequencerService', () => {
   });
 
   describe('getNextSequencerValue', () => {
-    it('Should start range sequencer and pass params from body to sequencer, reuse previous sequencer', () => {
-      const startSeq = () => sequencerService.getNextSequencerValue({
-        sequencer: 'RANGE_SEQ',
+    it('Should start range sequencer and pass params from body to sequencer', () => {
+      const startSeq = (step: number) => sequencerService.getNextSequencerValue({
+        sequencer: RANGE_SEQ,
         sequencerParams: [1, 3],
-        client: 'uniqe',
+        step,
         isEven: false,
         accumulator: false,
       });
-      expect(startSeq()).toEqual(1);
-      expect(startSeq()).toEqual(4);
-      sequencerService.clearClients();
+      expect(startSeq(0)).toEqual(1);
+      expect(startSeq(1)).toEqual(4);
     });
-    it('Should start pipe with range sequencer and pass params from body to sequencer, reuse previous sequencer', () => {
-      const startSeq = () => sequencerService.getNextSequencerValue({
-        sequencer: 'RANGE_SEQ',
+    it('Should start pipe with range sequencer and pass params from body to sequencer', () => {
+      const startSeq = (step: number) => sequencerService.getNextSequencerValue({
+        sequencer: RANGE_SEQ,
         sequencerParams: [1, 3],
-        client: 'uniqe',
         isEven: true,
         accumulator: true,
+        step,
       });
-      expect(startSeq()).toEqual({ number: 1, status: false });
-      expect(startSeq()).toEqual({ number: 5, status: false });
-      expect(startSeq()).toEqual({ number: 12, status: true });
-      sequencerService.clearClients();
-    });
-    it('Should start new sequencer for same client after changing params', () => {
-      const startSeq = (params: number[]) => sequencerService.getNextSequencerValue({
-        sequencer: 'RANGE_SEQ',
-        sequencerParams: params,
-        client: 'uniqe',
-        isEven: false,
-        accumulator: true,
-      });
-      expect(startSeq([1, 2])).toEqual(1);
-      expect(startSeq([1, 2])).toEqual(4);
-      expect(startSeq([1, 2])).toEqual(9);
-      expect(startSeq([1, 3])).toEqual(1);
-      expect(startSeq([1, 3])).toEqual(5);
-      expect(startSeq([1, 3])).toEqual(12);
-      sequencerService.clearClients();
+      expect(startSeq(0)).toEqual({ number: 1, status: false });
+      expect(startSeq(1)).toEqual({ number: 5, status: false });
+      expect(startSeq(2)).toEqual({ number: 12, status: true });
     });
   });
+  // TODO: add accumulator tests, isEven tests
 });
