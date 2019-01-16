@@ -9,8 +9,8 @@ import { ApiResponse, ApiOperation, ApiUseTags } from '@nestjs/swagger';
 export class SequencerController {
   constructor(private readonly sequencerService: SequencerService) {}
 
-  @ApiOperation({ title: 'Get next sequencer value'})
-  @ApiResponse({ status: HttpStatus.OK, description: 'Returns new value in the sequence' })
+  @ApiOperation({ title: 'Create next sequencer value'})
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Returns new value in the sequence' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'BadRequest', type: BadRequestException })
   @Post()
   nextSequencerValue(@Body() dto: RunSequencerDto): { data: number | IIsEven } {

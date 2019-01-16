@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { END_ERROR, FACTORIAL_SEQ, FIBONACCI_SEQ, RANGE_SEQ, PRIME_SEQ, PARTIAL_SUM_SEQ } from './sequencer.constants';
-import { SequencerType, PipedSequencerType, IIterator, IPipedSequencerResult, IIsEven, ISequencerCtx } from './sequencer.types';
+import { SequencerType, PipedSequencerType, IIterator, IPipedSequencerResult, IIsEven, ISequencerCtx, PipeType } from './sequencer.types';
 import { RunSequencerDto } from './dto/sequencer.dto';
 
 @Injectable()
@@ -87,7 +87,7 @@ export class SequencerService {
   }
 
   public pipeSeq(sequencer: SequencerType, ...args: number[]): IPipedSequencerResult {
-    const sequencers: SequencerType[] = [];
+    const sequencers: PipeType[] = [];
     return {
       pipeline(pipedSequencer: PipedSequencerType) {
         sequencers.push(pipedSequencer());

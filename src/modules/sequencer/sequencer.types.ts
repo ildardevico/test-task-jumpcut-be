@@ -1,12 +1,12 @@
-export type SequencerType = (...args: number[]) => number | void | { [key: string]: any};
+export interface ISequencerCtx {
+  step: number;
+}
+export type SequencerType = (this: ISequencerCtx, ...args: number[]) => number | void | { [key: string]: any};
+export type PipeType = (...args: number[]) => number | void | { [key: string]: any};
 
 export type PipedSequencerType = () => SequencerType;
 
 export interface IIsEven { status: boolean; number: number; }
-
-export interface ISequencerCtx {
-  step: number;
-}
 
 export interface IPipedSequencerResult {
   invoke: () => SequencerType;

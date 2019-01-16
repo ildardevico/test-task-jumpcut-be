@@ -5,9 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({
-    disableErrorMessages: true,
-  }));
+  app.useGlobalPipes(new ValidationPipe());
   const options = new DocumentBuilder()
     .setTitle('Test Task Jumpcut')
     .setDescription('The Task API description')
