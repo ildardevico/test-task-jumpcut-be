@@ -99,19 +99,27 @@ export class SequencerService {
     };
   }
 
-  public accumulator(): (value: number) => number {
+  public accumulator(): (value: number) => number | void {
     let sum = 0;
     return (value: number) => {
+      if (value === undefined) {
+        return;
+      }
       sum += value;
       return sum;
     };
   }
 
-  public isEven(): (value: number) => IIsEven {
-    return (value: number) => ({
-      status: value % 2 === 0,
-      number: value,
-    });
+  public isEven(): (value: number) => IIsEven | void {
+    return (value: number) => {
+      if (value === undefined) {
+        return;
+      }
+      return {
+        status: value % 2 === 0,
+        number: value,
+      };
+    };
   }
 
   public getNextSequencerValue(dto: RunSequencerDto): number | IIsEven {
