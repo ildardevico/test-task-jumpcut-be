@@ -4,6 +4,10 @@ export type PipedSequencerType = () => SequencerType;
 
 export interface IIsEven { status: boolean; number: number; }
 
+export interface ISequencerCtx {
+  step: number;
+}
+
 export interface IPipedSequencerResult {
   invoke: () => SequencerType;
   pipeline: (seq: PipedSequencerType) => IPipedSequencerResult;

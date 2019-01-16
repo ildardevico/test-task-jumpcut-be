@@ -186,5 +186,23 @@ describe('SequencerService', () => {
       expect(startSeq(2)).toEqual({ number: 12, status: true });
     });
   });
-  // TODO: add accumulator tests, isEven tests
+
+  describe('accumulator', () => {
+    it('Should return function which accumulate sum between calls', () => {
+      const accumulator = sequencerService.accumulator();
+      expect(accumulator.call).toBeTruthy();
+      expect(accumulator(2)).toEqual(2);
+      expect(accumulator(3)).toEqual(5);
+      expect(accumulator(3)).toEqual(8);
+    });
+  });
+
+  describe('isEven', () => {
+    it('Should return function which check if number is even', () => {
+      const isEven = sequencerService.isEven();
+      expect(isEven.call).toBeTruthy();
+      expect(isEven(1)).toEqual({ status: false, number: 1 });
+      expect(isEven(2)).toEqual({ status: true, number: 2 });
+    });
+  });
 });

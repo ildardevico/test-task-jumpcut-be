@@ -1,11 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { END_ERROR, FACTORIAL_SEQ, FIBONACCI_SEQ, RANGE_SEQ, PRIME_SEQ, PARTIAL_SUM_SEQ } from './sequencer.constants';
-import { SequencerType, PipedSequencerType, IIterator, IPipedSequencerResult, IIsEven } from './sequencer.types';
+import { SequencerType, PipedSequencerType, IIterator, IPipedSequencerResult, IIsEven, ISequencerCtx } from './sequencer.types';
 import { RunSequencerDto } from './dto/sequencer.dto';
 
 @Injectable()
 export class SequencerService {
-  private step: number;
   private readonly sequencerStrategy = {
     [FACTORIAL_SEQ]: this.factorialSeq,
     [FIBONACCI_SEQ]: this.fibonacciSeq,
@@ -14,13 +13,13 @@ export class SequencerService {
     [PARTIAL_SUM_SEQ]: this.partialSumSeq,
   };
 
-  public factorialSeq(): number {
+  public factorialSeq(this: ISequencerCtx): number {
     return Array
       .from(Array(this.step).keys())
       .reduce((acc, _, ind) => acc * (ind + 1), 1);
   }
 
-  public fibonacciSeq(): number {
+  public fibonacciSeq(this: ISequencerCtx): number {
     const step = this.step + 1;
     if (step === 1 || step === 2) {
       return 1;
@@ -36,14 +35,14 @@ export class SequencerService {
     return current;
   }
 
-  public rangeSeq(start: number, rangeStep: number): number {
+  public rangeSeq(this: ISequencerCtx, start: number, rangeStep: number): number {
     if (this.step === 0) {
       return start;
     }
     return start + (rangeStep * this.step);
   }
 
-  public primeSeq(): number {
+  public primeSeq(this: ISequencerCtx): number {
     const primeNumbers = [2];
     const { step } = this;
     let i = 2;
@@ -57,7 +56,7 @@ export class SequencerService {
     return primeNumbers[step];
   }
 
-  public partialSumSeq(...args: number[]): number {
+  public partialSumSeq(this: ISequencerCtx, ...args: number[]): number {
     const exist = args[this.step];
     if (exist === undefined) {
       return;
@@ -94,7 +93,7 @@ export class SequencerService {
         sequencers.push(pipedSequencer());
         return this;
       },
-      invoke: () => function() {
+      invoke: () => function(this: ISequencerCtx) {
         return sequencers.reduce((piped, current) => current(piped), sequencer.apply(this, args));
       },
     };
